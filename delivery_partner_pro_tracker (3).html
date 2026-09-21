@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>RiderTrack Pro - Zomato Earnings, Trip Savings & Shift Tracker</title>
+
+  <!-- Mobile App Manifest & Styling -->
+  <meta name="theme-color" content="#06090e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              red: '#e23744',
+              emerald: '#10b981',
+              amber: '#f59e0b',
+              cyan: '#06b6d4',
+              pink: '#ec4899',
+              indigo: '#6366f1',
+            },
+            surface: {
+              950: '#06090e',
+              900: '#0c111d',
+              850: '#111827',
+              800: '#1a2333',
+              700: '#26334d',
+              600: '#374b6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #06090e;
+      color: #f1f5f9;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    input, select, textarea {
+      user-select: auto;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #26334d;
+      border-radius: 4px;
+    }
+    .numpad-btn {
+      touch-action: manipulation;
+      transition: all 0.08s ease-in-out;
+    }
+    .numpad-btn:active {
+      transform: scale(0.92);
+      filter: brightness(1.2);
+    }
+    .action-pill {
+      touch-action: manipulation;
+      transition: all 0.1s ease-in-out;
+    }
+    .action-pill:active {
+      transform: scale(0.94);
+    }
+    .glow-emerald {
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col font-sans pb-32 text-slate-100 bg-surface-950">
+
+  <header class="sticky top-0 z-40 bg-surface-950/95 backdrop-blur-md border-b border-surface-700/60 px-4 py-2.5">
+    <div class="max-w-xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-red to-orange-500 flex items-center justify-center shadow-md shadow-red-950/50">
+          <i class="fa-solid fa-motorcycle text-white text-base"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="font-extrabold text-sm tracking-tight text-white">RiderTrack Pro</h1>
+            <span class="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-brand-red/20 text-brand-red border border-brand-red/30">Zomato</span>
+          </div>
+          <p id="currentDateDisplay" class="text-[11px] text-slate-400 font-medium">Daily Earnings & Shift Tracker</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="openModal('modalBalances')" title="Carryover Balances" class="flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-850 hover:bg-surface-800 border border-surface-700 rounded-lg text-xs font-semibold text-cyan-300 transition">
+          <i class="fa-solid fa-wallet text-cyan-400 text-xs"></i>
+          <span>Balances</span>
+        </button>
+        <button onclick="openModal('modalBackup')" title="Settings & Backup" class="w-8 h-8 rounded-lg bg-surface-850 hover:bg-surface-800 border border-surface-700 flex items-center justify-center text-slate-300 transition">
+          <i class="fa-solid fa-gear text-xs"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-xl mx-auto w-full px-3.5 pt-3 flex-1 space-y-3">
+
+    <!-- UTTARAKHAND TRIP & EMIs/RENT SAVINGS CARD -->
+    <section class="bg-gradient-to-br from-indigo-950/40 via-surface-850 to-surface-900 border border-indigo-500/40 rounded-2xl p-3.5 shadow-xl relative overflow-hidden">
+      <div class="flex items-start justify-between pb-2 mb-2 border-b border-surface-700/60">
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-base">🏔️</span>
+            <h2 class="text-xs font-extrabold uppercase tracking-wider text-indigo-300">Uttarakhand & Commitments Fund</h2>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-0.5">Kannarichhina • Munsiyari Zero Point • Darma + EMIs & Rent</p>
+        </div>
+        <button onclick="openModal('modalTripBreakdown')" class="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/30">
+          <i class="fa-solid fa-circle-info text-[9px]"></i> Breakdown
+        </button>
+      </div>
+
+      <!-- Target & Days Countdown Row -->
+      <div class="grid grid-cols-3 gap-2 mb-2.5 text-center">
+        <div class="bg-surface-950/70 p-2 rounded-xl border border-surface-700/50">
+          <span class="text-[9px] uppercase font-bold text-slate-400 block">Departure</span>
+          <span class="text-xs font-black text-indigo-300 font-mono">20 Nov 2026</span>
+        </div>
+        <div class="bg-surface-950/70 p-2 rounded-xl border border-amber-500/30 bg-amber-950/10">
+          <span class="text-[9px] uppercase font-bold text-amber-400 block">Countdown</span>
+          <span id="tripDaysCountdown" class="text-xs font-black text-amber-400 font-mono">60 Days Left</span>
+        </div>
+        <div class="bg-surface-950/70 p-2 rounded-xl border border-cyan-500/30 bg-cyan-950/10">
+          <span class="text-[9px] uppercase font-bold text-cyan-400 block">Daily Target</span>
+          <span class="text-xs font-black text-cyan-300 font-mono">₹800 / day</span>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="space-y-1 mb-2.5">
+        <div class="flex justify-between items-baseline text-xs">
+          <span class="font-bold text-slate-300">Total Saved: <span id="tripSavedDisplay" class="text-emerald-400 font-mono font-extrabold text-sm">₹0</span></span>
+          <span class="text-[11px] font-semibold text-slate-400 font-mono">Goal: <strong class="text-indigo-300">₹48,000</strong> (<span id="tripProgressPercent">0%</span>)</span>
+        </div>
+        <div class="w-full bg-surface-950 rounded-full h-2.5 overflow-hidden border border-surface-700/60">
+          <div id="tripProgressBar" class="h-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-emerald-400 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <div class="flex justify-between text-[10px] text-slate-400 font-medium">
+          <span id="tripRemainingDisplay">₹48,000 needed</span>
+          <span>Pulsar N160 Expedition</span>
+        </div>
+      </div>
+
+      <!-- Direct Live Edit / Fast Deposit Box -->
+      <div class="bg-surface-950/80 p-2.5 rounded-xl border border-surface-700/80 space-y-2 mb-2">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-bold text-indigo-300 uppercase tracking-wider">Set Exact Saved Total:</span>
+          <span class="text-[9px] text-slate-400">Updates immediately</span>
+        </div>
+        <div class="flex gap-2">
+          <div class="relative flex-1">
+            <input type="number" id="inlineSavedInput" step="1" min="0" placeholder="Enter total saved (e.g. 15000)"
+              class="w-full bg-surface-900 border border-surface-700 rounded-lg py-1.5 px-3 text-sm font-bold text-emerald-400 font-mono focus:outline-none focus:border-indigo-400" />
+            <span class="absolute right-3 top-1.5 text-slate-500 text-xs font-bold">₹</span>
+          </div>
+          <button onclick="applyInlineSavedTotal()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs transition active:scale-95 shadow">
+            Save
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Action: Allocate Shift Profit into Trip Piggybank -->
+      <div class="flex gap-2">
+        <button onclick="allocateShiftProfitToTrip()" class="flex-1 py-2 px-2.5 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition">
+          <i class="fa-solid fa-piggy-bank text-xs text-amber-300"></i>
+          <span>Save Today's Net (₹<span id="btnShiftProfitValue">0</span>)</span>
+        </button>
+        <button onclick="openModal('modalCustomSavings')" class="px-3 py-2 bg-surface-800 hover:bg-surface-700 border border-surface-600 text-cyan-300 font-bold rounded-xl text-xs transition active:scale-95 flex items-center gap-1">
+          <i class="fa-solid fa-plus text-[10px]"></i>
+          <span>Deposit</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- CARRYOVER & LIVE POCKET / BANK BALANCE -->
+    <section class="bg-surface-850 border border-surface-700/80 rounded-2xl p-3.5 shadow-lg">
+      <div class="flex items-center justify-between pb-2 mb-2 border-b border-surface-700/60">
+        <div class="flex items-center gap-1.5">
+          <div class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+          <span class="text-[11px] font-extrabold tracking-wider uppercase text-slate-300">Live Balances (Last Week + Today)</span>
+        </div>
+        <button onclick="openModal('modalBalances')" class="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+          <i class="fa-solid fa-pen-to-square text-[10px]"></i> Edit Balances
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div class="bg-surface-950/85 p-2.5 rounded-xl border border-surface-700/60">
+          <div class="flex items-center justify-between mb-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+              <i class="fa-solid fa-money-bill-wave text-emerald-400"></i> Cash In Hand
+            </span>
+            <span class="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 rounded font-mono">Live</span>
+          </div>
+          <div class="text-lg font-extrabold text-emerald-400 font-mono" id="dispLiveCashInHand">₹0</div>
+          <p class="text-[9px] text-slate-500 leading-tight">Start + COD/Cash Tips - Cash Spent</p>
+        </div>
+
+        <div class="bg-surface-950/85 p-2.5 rounded-xl border border-surface-700/60">
+          <div class="flex items-center justify-between mb-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+              <i class="fa-solid fa-building-columns text-cyan-400"></i> Bank / App Wallet
+            </span>
+            <span class="text-[9px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-1 rounded font-mono">Total</span>
+          </div>
+          <div class="text-lg font-extrabold text-cyan-400 font-mono" id="dispLiveBankBalance">₹0</div>
+          <p class="text-[9px] text-slate-500 leading-tight">Last Week Bank + Online Orders</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHIFT TIMER & DUTY CONTROLS -->
+    <section class="bg-surface-850 border border-surface-700/80 rounded-2xl p-3.5 shadow-lg">
+      <div class="flex items-center justify-between pb-2.5 border-b border-surface-700/60">
+        <div class="flex items-center gap-2">
+          <div id="dutyPulseDot" class="w-2.5 h-2.5 rounded-full bg-slate-500"></div>
+          <span id="dutyStatusBadge" class="text-[11px] font-extrabold tracking-wider uppercase px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+            OFF DUTY
+          </span>
+        </div>
+        
+        <div class="text-right">
+          <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Shift Duration</span>
+          <div id="liveShiftTimer" class="text-base font-mono font-bold text-white tracking-wider">00:00:00</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 my-2.5">
+        <div class="bg-surface-950/70 p-2 rounded-xl border border-surface-700/50 flex items-center justify-between">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+            <i class="fa-regular fa-clock text-emerald-400"></i> Start:
+          </span>
+          <span id="displayStartTime" class="text-xs font-bold text-emerald-400 font-mono">--:--</span>
+        </div>
+
+        <div class="bg-surface-950/70 p-2 rounded-xl border border-surface-700/50 flex items-center justify-between">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+            <i class="fa-regular fa-flag-checkered text-rose-400"></i> End:
+          </span>
+          <span id="displayEndTime" class="text-xs font-bold text-rose-400 font-mono">--:--</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <button id="btnStartShift" onclick="handleStartShift()" class="flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-xl shadow-md text-xs transition active:scale-95">
+          <i class="fa-solid fa-play text-[10px]"></i>
+          <span>Start Shift</span>
+        </button>
+
+        <button id="btnEndShift" onclick="handleEndShift()" disabled class="flex items-center justify-center gap-1.5 py-2.5 bg-surface-800 text-slate-500 border border-surface-700/70 font-bold rounded-xl text-xs transition cursor-not-allowed">
+          <i class="fa-solid fa-stop text-[10px]"></i>
+          <span>End Shift</span>
+        </button>
+      </div>
+
+      <div class="mt-2 text-right">
+        <button id="btnToggleManualHours" class="text-[10px] text-slate-400 hover:text-slate-200 underline">
+          Manual Hours, KM & Orders
+        </button>
+      </div>
+
+      <div id="manualHoursContainer" class="hidden grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-surface-700/50">
+        <div>
+          <label class="block text-[9px] font-semibold text-slate-400 mb-0.5">Hours</label>
+          <input type="number" id="inputShiftHours" step="0.1" min="0" placeholder="0.0"
+            class="w-full bg-surface-950 border border-surface-700 rounded-lg p-1.5 text-xs font-bold text-white focus:outline-none font-mono" />
+        </div>
+        <div>
+          <label class="block text-[9px] font-semibold text-slate-400 mb-0.5">KM Run</label>
+          <input type="number" id="inputShiftKm" step="1" min="0" placeholder="0"
+            class="w-full bg-surface-950 border border-surface-700 rounded-lg p-1.5 text-xs font-bold text-white focus:outline-none font-mono" />
+        </div>
+        <div>
+          <label class="block text-[9px] font-semibold text-slate-400 mb-0.5">Orders</label>
+          <input type="number" id="inputShiftOrders" step="1" min="0" placeholder="0"
+            class="w-full bg-surface-950 border border-surface-700 rounded-lg p-1.5 text-xs font-bold text-white focus:outline-none font-mono" />
+        </div>
+      </div>
+    </section>
+
+    <!-- SHIFT NET PROFIT & KPIS -->
+    <section class="bg-gradient-to-br from-surface-850 to-surface-900 border border-surface-700/80 rounded-2xl p-3.5 shadow-xl relative overflow-hidden">
+      <div class="flex justify-between items-start mb-1">
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wide uppercase">Today's Net Take-Home</span>
+          <div class="flex items-baseline gap-1">
+            <span class="text-3xl font-extrabold text-emerald-400 tracking-tight" id="heroNetProfit">₹0</span>
+            <span class="text-xs font-medium text-slate-400">net profit</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <span class="text-[10px] font-medium text-slate-400">Shift Target</span>
+          <div class="text-sm font-bold text-slate-200" id="targetPercentageText">0%</div>
+        </div>
+      </div>
+
+      <div class="w-full bg-surface-950 rounded-full h-2 overflow-hidden border border-surface-700/60 my-1.5">
+        <div id="targetProgressBar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+      <div class="flex justify-between text-[10px] font-medium text-slate-400 mb-2.5">
+        <span id="targetRemainingText">₹1,500 needed to hit daily goal</span>
+        <span id="targetGoalAmountDisplay">Goal: ₹1,500</span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5 pt-2 border-t border-surface-700/50 text-center">
+        <div class="bg-surface-950/80 rounded-xl p-2 border border-surface-700/40">
+          <span class="text-[10px] text-slate-400 font-semibold block">Deliveries</span>
+          <p id="heroDeliveryPay" class="text-sm font-bold text-slate-100 font-mono">₹0</p>
+        </div>
+
+        <div class="bg-surface-950/80 rounded-xl p-2 border border-pink-500/30 bg-pink-950/10">
+          <span class="text-[10px] text-pink-400 font-semibold block">Customer Tips</span>
+          <p id="heroCustomerTips" class="text-sm font-bold text-pink-400 font-mono">₹0</p>
+        </div>
+
+        <div class="bg-surface-950/80 rounded-xl p-2 border border-surface-700/40">
+          <span class="text-[10px] text-slate-400 font-semibold block">Expenses</span>
+          <p id="heroExpenses" class="text-sm font-bold text-rose-400 font-mono">₹0</p>
+        </div>
+
+        <div class="bg-surface-950/80 rounded-xl p-2 border border-surface-700/40">
+          <span class="text-[10px] text-slate-400 font-semibold block">Hourly Pay</span>
+          <p id="heroHourlyWage" class="text-sm font-bold text-cyan-400 font-mono">₹0<span class="text-[9px] font-normal text-slate-400">/h</span></p>
+        </div>
+
+        <div class="col-span-2 sm:col-span-1 bg-surface-950/80 rounded-xl p-2 border border-surface-700/40">
+          <span class="text-[10px] text-slate-400 font-semibold block">Rate / KM</span>
+          <p id="heroPerKm" class="text-sm font-bold text-amber-400 font-mono">₹0<span class="text-[9px] font-normal text-slate-400">/k</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- RAPID INSTANT LOGGING WITH FLEXIBLE NUMPAD (e.g. 53, 54, 67, 128) -->
+    <section class="bg-surface-850 border border-surface-700/80 rounded-2xl p-3.5 shadow-xl">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-1.5">
+          <i class="fa-solid fa-calculator text-amber-400 text-sm"></i>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-white">Instant Amount Logger</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <!-- Payment Mode Switch -->
+          <button id="togglePayModeBtn" onclick="toggleEntryPaymentMode()" class="text-[10px] font-bold px-2 py-0.5 rounded-md border border-cyan-500/40 bg-cyan-500/10 text-cyan-300">
+            Mode: <span id="currentPayModeLabel">Online / App</span>
+          </button>
+          <button onclick="toggleNumpadVisibility()" class="text-[10px] text-slate-400 hover:text-slate-200">
+            <i class="fa-solid fa-chevron-up" id="numpadToggleIcon"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Amount Display with Quick Modifiers (+1, +5, +10) -->
+      <div class="bg-surface-950 border-2 border-surface-700 rounded-xl p-2.5 mb-2 flex items-center justify-between">
+        <div class="flex items-baseline gap-1">
+          <span class="text-lg font-extrabold text-slate-500">₹</span>
+          <span id="numpadDisplay" class="text-2xl font-black font-mono tracking-tight text-white">0</span>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <button onclick="numpadAddDelta(1)" class="numpad-btn px-2.5 py-1 bg-surface-800 hover:bg-surface-700 border border-surface-600 rounded-lg text-xs font-bold text-amber-300 font-mono">+1</button>
+          <button onclick="numpadAddDelta(5)" class="numpad-btn px-2.5 py-1 bg-surface-800 hover:bg-surface-700 border border-surface-600 rounded-lg text-xs font-bold text-amber-300 font-mono">+5</button>
+          <button onclick="numpadAddDelta(10)" class="numpad-btn px-2.5 py-1 bg-surface-800 hover:bg-surface-700 border border-surface-600 rounded-lg text-xs font-bold text-amber-300 font-mono">+10</button>
+          <button onclick="numpadClear()" class="numpad-btn px-2.5 py-1 bg-rose-950/60 border border-rose-600/40 rounded-lg text-xs font-bold text-rose-300">
+            <i class="fa-solid fa-delete-left"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Preset Chips -->
+      <div class="flex gap-1.5 overflow-x-auto pb-1.5 custom-scrollbar mb-2 text-xs font-mono">
+        <button onclick="numpadSetVal(40)" class="action-pill px-2.5 py-1 bg-surface-900 border border-surface-700 rounded-lg text-slate-300 font-bold whitespace-nowrap">₹40</button>
+        <button onclick="numpadSetVal(53)" class="action-pill px-2.5 py-1 bg-surface-900 border border-surface-700 rounded-lg text-slate-300 font-bold whitespace-nowrap">₹53</button>
+        <button onclick="numpadSetVal(54)" class="action-pill px-2.5 py-1 bg-surface-900 border border-surface-700 rounded-lg text-slate-300 font-bold whitespace-nowrap">₹54</button>
+        <button onclick="numpadSetVal(65)" class="action-pill px-2.5 py-1 bg-surface-900 border border-surface-700 rounded-lg text-slate-300 font-bold whitespace-nowrap">₹65</button>
+        <button onclick="numpadSetVal(80)" class="action-pill px-2.5 py-1 bg-surface-900 border border-surface-700 rounded-lg text-slate-300 font-bold whitespace-nowrap">₹80</button>
+        <button onclick="numpadSetVal(100)" class="action-pill px-2.5 py-1 bg-surface-900 border border-surface-700 rounded-lg text-slate-300 font-bold whitespace-nowrap">₹100</button>
+        <button onclick="numpadSetVal(150)" class="action-pill px-2.5 py-1 bg-surface-900 border border-surface-700 rounded-lg text-slate-300 font-bold whitespace-nowrap">₹150</button>
+      </div>
+
+      <!-- Keypad Grid -->
+      <div id="numpadKeypadGrid" class="grid grid-cols-3 gap-1.5 mb-2.5">
+        <button onclick="numpadDigit('1')" class="numpad-btn py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700/80 rounded-xl text-base font-bold text-white font-mono">1</button>
+        <button onclick="numpadDigit('2')" class="numpad-btn py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700/80 rounded-xl text-base font-bold text-white font-mono">2</button>
+        <button onclick="numpadDigit('3')" class="numpad-btn py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700/80 rounded-xl text-base font-bold text-white font-mono">3</button>
+
+        <button onclick="numpadDigit('4')" class="numpad-btn py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700/80 rounded-xl text-base font-bold text-white font-mono">4</button>
+        <button onclick="numpadDigit('5')" class="numpad-btn py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700/80 rounded-xl text-base font-bold text-white font-mono">5</button>
+        <button onclick="numpadDigit('6')" class="numpad-btn py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700/80 rounded-xl text-base font-bold text-white font-mono">6</button>
+
+        <button onclick="numpadDigit('7')" class="numpad-btn py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700/80 rounded-xl text-base font-bold text-white font-mono">7</button>
+        <button onclick="numpadDigit('8')" class="numpad-btn py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700/80 rounded-xl text-base font-bold text-white font-mono">8</button>
+        <button onclick="numpadDigit('9')" class="numpad-btn py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700/80 rounded-xl text-base font-bold text-white font-mono">9</button>
+
+        <button onclick="numpadDigit('00')" class="numpad-btn py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700/80 rounded-xl text-xs font-bold text-slate-400 font-mono">00</button>
+        <button onclick="numpadDigit('0')" class="numpad-btn py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700/80 rounded-xl text-base font-bold text-white font-mono">0</button>
+        <button onclick="numpadBackspace()" class="numpad-btn py-2.5 bg-surface-800 hover:bg-surface-700 border border-surface-600 rounded-xl text-xs font-bold text-rose-300">
+          <i class="fa-solid fa-backspace text-sm"></i>
+        </button>
+      </div>
+
+      <!-- 1-TAP CATEGORY STAMP BUTTONS -->
+      <div class="space-y-1.5">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tap to save entered amount as:</span>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="submitNumpadLog('earning', 'Delivery Pay')" class="action-pill py-2.5 px-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md">
+            <i class="fa-solid fa-box text-xs"></i>
+            <span>+ Order Pay</span>
+          </button>
+
+          <button onclick="submitNumpadLog('earning', 'Customer Tip')" class="action-pill py-2.5 px-2 bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-500 hover:to-rose-400 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md">
+            <i class="fa-solid fa-heart text-xs"></i>
+            <span>+ Customer Tip</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-4 gap-1.5 pt-1">
+          <button onclick="submitNumpadLog('expense', 'Fuel')" class="action-pill py-2 bg-surface-900 hover:bg-surface-800 border border-rose-500/40 text-rose-300 rounded-xl text-[11px] font-bold flex flex-col items-center justify-center">
+            <i class="fa-solid fa-gas-pump text-xs mb-0.5"></i>
+            <span>- Petrol</span>
+          </button>
+
+          <button onclick="submitNumpadLog('expense', 'Cigarette')" class="action-pill py-2 bg-surface-900 hover:bg-surface-800 border border-amber-500/40 text-amber-300 rounded-xl text-[11px] font-bold flex flex-col items-center justify-center">
+            <i class="fa-solid fa-smoking text-xs mb-0.5"></i>
+            <span>- Cigarette</span>
+          </button>
+
+          <button onclick="submitNumpadLog('expense', 'Food/Chai')" class="action-pill py-2 bg-surface-900 hover:bg-surface-800 border border-orange-500/40 text-orange-300 rounded-xl text-[11px] font-bold flex flex-col items-center justify-center">
+            <i class="fa-solid fa-mug-hot text-xs mb-0.5"></i>
+            <span>- Chai/Food</span>
+          </button>
+
+          <button onclick="submitNumpadLog('expense', 'Bike Repairs')" class="action-pill py-2 bg-surface-900 hover:bg-surface-800 border border-cyan-500/40 text-cyan-300 rounded-xl text-[11px] font-bold flex flex-col items-center justify-center">
+            <i class="fa-solid fa-wrench text-xs mb-0.5"></i>
+            <span>- Bike/Air</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHARTS SECTION -->
+    <section class="space-y-3">
+      <!-- Line Chart -->
+      <div class="bg-surface-850 border border-surface-700/70 rounded-2xl p-3.5 shadow-lg">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">Shift Growth Line Chart</h2>
+          </div>
+          <span class="text-[10px] font-semibold text-slate-400">Gross vs Net</span>
+        </div>
+        <div class="relative h-44 w-full">
+          <canvas id="trendLineChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Doughnut Pie Chart -->
+      <div class="bg-surface-850 border border-surface-700/70 rounded-2xl p-3.5 shadow-lg">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+            <i class="fa-solid fa-chart-pie text-brand-red"></i>
+            Expense Breakdown Pie Chart
+          </h2>
+          <span id="doughnutTotalText" class="text-xs font-bold text-rose-400 font-mono">Total: ₹0</span>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+          <div class="sm:col-span-6 relative h-40 w-full flex items-center justify-center">
+            <canvas id="expensePieChart"></canvas>
+            <div id="noExpensePlaceholder" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-3">
+              <i class="fa-solid fa-receipt text-xl text-slate-600 mb-1"></i>
+              <p class="text-xs text-slate-500">No expenses logged yet</p>
+            </div>
+          </div>
+          <div class="sm:col-span-6 flex flex-col gap-1 text-xs" id="expenseLegendContainer"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHIFT ACTIVITY LOG -->
+    <section class="bg-surface-850 border border-surface-700/70 rounded-2xl p-3.5 shadow-lg mb-4">
+      <div class="flex items-center justify-between mb-2.5">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+          <i class="fa-solid fa-clock-rotate-left text-slate-400"></i>
+          Activity Log (<span id="entryCountBadge">0</span>)
+        </h2>
+        <button id="btnClearToday" class="text-[10px] font-semibold text-rose-400 hover:text-rose-300">
+          Reset Today
+        </button>
+      </div>
+
+      <div id="transactionsList" class="space-y-1.5 max-h-64 overflow-y-auto custom-scrollbar pr-1"></div>
+    </section>
+  </main>
+
+  <!-- Bottom Navigation Actions -->
+  <div class="fixed bottom-0 inset-x-0 bg-surface-950/95 backdrop-blur-md border-t border-surface-700/80 px-4 py-2.5 z-40">
+    <div class="max-w-xl mx-auto flex items-center justify-around gap-2">
+      <button onclick="openModal('modalAddEarning')" class="flex-1 flex items-center justify-center gap-1.5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-bold rounded-xl shadow-lg text-xs transition active:scale-95">
+        <i class="fa-solid fa-plus-circle text-sm"></i>
+        <span>Full Form Entry</span>
+      </button>
+
+      <button onclick="scrollToNumpad()" class="flex-1 flex items-center justify-center gap-1.5 py-3 bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 text-slate-950 font-black rounded-xl shadow-lg text-xs transition active:scale-95">
+        <i class="fa-solid fa-calculator text-sm"></i>
+        <span>Instant Numpad</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: UTTARAKHAND TRIP & COMMITMENTS BREAKDOWN -->
+  <div id="modalTripBreakdown" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-3.5">
+    <div class="bg-surface-850 border border-surface-700 rounded-3xl w-full max-w-md p-5 shadow-2xl space-y-3 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex justify-between items-center pb-2 border-b border-surface-700/60">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🏔️</span>
+          <div>
+            <h3 class="font-bold text-sm text-white">Target Budget & Savings Manager</h3>
+            <span class="text-[10px] text-slate-400">Total Goal: ₹48,000 before 20 Nov 2026</span>
+          </div>
+        </div>
+        <button onclick="closeModal('modalTripBreakdown')" class="text-slate-400 hover:text-white p-1">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <div class="p-2.5 bg-surface-950 rounded-xl border border-surface-700/70">
+          <div class="flex justify-between font-bold text-indigo-300 mb-1">
+            <span>1. Fixed Commitments (2 Months)</span>
+            <span class="font-mono">₹25,800</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-tight">
+            • Pulsar N160 EMI (₹5,400 × 2) = ₹10,800<br>
+            • Other Personal EMI (₹2,500 × 2) = ₹5,000<br>
+            • Room Rent for 2 Months (₹5,000 × 2) = ₹10,000
+          </p>
+        </div>
+
+        <div class="p-2.5 bg-surface-950 rounded-xl border border-surface-700/70">
+          <div class="flex justify-between font-bold text-cyan-300 mb-1">
+            <span>2. October: Almora Learning License</span>
+            <span class="font-mono">₹2,750</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-tight">
+            • Round trip ~750-800 km on N160 (~43 km/L) = ~19L Petrol (₹1,950)<br>
+            • Toll, parking, RTO misc & buffer = ₹800
+          </p>
+        </div>
+
+        <div class="p-2.5 bg-surface-950 rounded-xl border border-surface-700/70">
+          <div class="flex justify-between font-bold text-amber-300 mb-1">
+            <span>3. November: Hometown, Munsiyari & Darma</span>
+            <span class="font-mono">₹15,000</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-tight">
+            • Delhi → Kannarichhina → Munsiyari Zero Point → Darma Valley (~1,466+ km) Petrol = ₹4,000<br>
+            • Munsiyari 1-night stay & food = ₹2,500<br>
+            • Darma Valley 1-day stay & food = ₹1,500<br>
+            • Journey food, permits & mountain detours = ₹3,000<br>
+            • Pre-trip full bike service & checkup = ₹1,500<br>
+            • Emergency repair fund = ₹2,500
+          </p>
+        </div>
+
+        <div class="p-2.5 bg-surface-950 rounded-xl border border-emerald-500/40">
+          <div class="flex justify-between font-bold text-emerald-300 mb-1">
+            <span>4. Mountain Safety Buffer</span>
+            <span class="font-mono">₹4,450</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-tight">
+            Extra buffer so you travel with peace of mind without worrying about sudden puncture, weather delays, or extra night stays.
+          </p>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-surface-700 flex justify-between items-center">
+        <span class="text-xs font-bold text-slate-300">Target Pace:</span>
+        <span class="text-xs font-mono font-bold text-amber-400">Save ₹800/day (₹5,600/week)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / DEPOSIT TRIP SAVINGS -->
+  <div id="modalCustomSavings" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-surface-850 border border-surface-700 rounded-2xl w-full max-w-sm p-4 shadow-2xl space-y-3.5">
+      <div class="flex justify-between items-center pb-2 border-b border-surface-700/60">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i class="fa-solid fa-piggy-bank text-amber-400"></i> Deposit Into Trip Fund
+        </h3>
+        <button onclick="closeModal('modalCustomSavings')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-2.5 bg-surface-950 rounded-xl border border-surface-700/80 space-y-2">
+        <label class="block text-[11px] font-bold text-slate-300">
+          Add Cash Deposit (₹)
+        </label>
+        <div class="relative">
+          <input type="number" id="inputCustomSavingsAmount" step="1" min="1" placeholder="e.g. 800"
+            class="w-full bg-surface-900 border border-surface-700 rounded-xl p-2.5 text-base font-bold text-amber-300 focus:outline-none font-mono" />
+          <span class="absolute right-3 top-2.5 text-slate-500 font-bold">₹</span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-1.5">
+          <button onclick="setCustomSavingsQuick(400)" class="py-1.5 bg-surface-900 border border-surface-700 hover:bg-surface-800 rounded-lg text-xs font-semibold text-slate-300">₹400</button>
+          <button onclick="setCustomSavingsQuick(800)" class="py-1.5 bg-surface-900 border border-surface-700 hover:bg-surface-800 rounded-lg text-xs font-semibold text-slate-300">₹800 (1 Day)</button>
+          <button onclick="setCustomSavingsQuick(1600)" class="py-1.5 bg-surface-900 border border-surface-700 hover:bg-surface-800 rounded-lg text-xs font-semibold text-slate-300">₹1,600</button>
+        </div>
+
+        <button onclick="confirmCustomSavingsDeposit()" class="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-bold rounded-xl text-xs transition active:scale-95 shadow-md">
+          + Add Deposit to Savings
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SET LAST WEEK BALANCES -->
+  <div id="modalBalances" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-surface-850 border border-surface-700 rounded-2xl w-full max-w-sm p-4 shadow-2xl space-y-3.5">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i class="fa-solid fa-wallet text-cyan-400"></i> Carryover Balances
+        </h3>
+        <button onclick="closeModal('modalBalances')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p class="text-[11px] text-slate-400 leading-relaxed">
+        Set physical cash in your pocket and money in your bank account:
+      </p>
+
+      <div class="space-y-2.5">
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-300 mb-1">Cash In Hand (In Pocket)</label>
+          <div class="relative">
+            <input type="number" id="inputInitCash" step="1" min="0" placeholder="0" class="w-full bg-surface-950 border border-surface-700 rounded-xl p-2.5 text-base font-bold text-emerald-400 font-mono focus:outline-none focus:border-emerald-400" />
+            <span class="absolute right-3 top-2.5 text-slate-400 font-bold">₹</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-300 mb-1">Bank / App Wallet Balance</label>
+          <div class="relative">
+            <input type="number" id="inputInitBank" step="1" min="0" placeholder="0" class="w-full bg-surface-950 border border-surface-700 rounded-xl p-2.5 text-base font-bold text-cyan-400 font-mono focus:outline-none focus:border-cyan-400" />
+            <span class="absolute right-3 top-2.5 text-slate-400 font-bold">₹</span>
+          </div>
+        </div>
+
+        <div class="pt-1 flex items-center gap-2">
+          <input type="checkbox" id="checkSyncBalanceToTrip" class="rounded bg-surface-950 border-surface-700 text-indigo-500 w-4 h-4" />
+          <label for="checkSyncBalanceToTrip" class="text-[11px] text-slate-300 select-none">
+            Also update Trip Total Saved with this bank amount
+          </label>
+        </div>
+
+        <button id="btnSaveBalances" class="w-full py-2.5 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 text-white font-bold rounded-xl text-xs transition active:scale-95 shadow-md">
+          Save Balances
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD CUSTOM EARNING (FULL FORM) -->
+  <div id="modalAddEarning" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-surface-850 border border-surface-700 rounded-t-3xl sm:rounded-2xl w-full max-w-md p-5 shadow-2xl">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i class="fa-solid fa-indian-rupee-sign text-emerald-400"></i> Log Detailed Transaction
+        </h3>
+        <button onclick="closeModal('modalAddEarning')" class="text-slate-400 hover:text-white p-1">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <form id="formAddEarning" class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-400 mb-1">Transaction Type</label>
+          <select id="earningType" class="w-full bg-surface-950 border border-surface-700 rounded-xl p-2.5 text-xs font-semibold text-white focus:outline-none focus:border-emerald-500">
+            <option value="Delivery Pay">📦 Delivery Pay (Zomato/Swiggy)</option>
+            <option value="Customer Tip">💖 Customer Tip</option>
+            <option value="Fuel">⛽ Fuel / Petrol Expense</option>
+            <option value="Cigarette">🚬 Cigarette Expense</option>
+            <option value="Food/Chai">☕ Food & Chai Expense</option>
+            <option value="Bike Repairs">🔧 Bike Maintenance / Air</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Exact Amount (₹)</label>
+            <input type="number" id="earningAmount" step="1" min="1" placeholder="e.g. 53" required
+              class="w-full bg-surface-950 border border-surface-700 rounded-xl p-2.5 text-lg font-extrabold text-emerald-400 focus:outline-none focus:border-emerald-400 font-mono" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Payment Method</label>
+            <select id="earningPayMethod" class="w-full bg-surface-950 border border-surface-700 rounded-xl p-2.5 text-xs font-semibold text-white focus:outline-none">
+              <option value="Online">Online / App Account</option>
+              <option value="Cash">Cash in Hand</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-400 mb-1">Note (Optional)</label>
+          <input type="text" id="earningNote" placeholder="e.g. 5.2km delivery" 
+            class="w-full bg-surface-950 border border-surface-700 rounded-xl p-2 text-xs text-white focus:outline-none" />
+        </div>
+
+        <div class="pt-2 flex gap-2">
+          <button type="button" onclick="closeModal('modalAddEarning')" class="flex-1 py-2 bg-surface-700 rounded-xl text-xs font-semibold text-slate-300">Cancel</button>
+          <button type="submit" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs font-bold text-white shadow-lg shadow-emerald-950/40">Save Entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SETTINGS & BACKUP -->
+  <div id="modalBackup" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-surface-850 border border-surface-700 rounded-2xl w-full max-w-sm p-4 shadow-2xl space-y-3">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-cyan-400"></i> Settings & Backup
+        </h3>
+        <button onclick="closeModal('modalBackup')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2">
+        <button id="btnExportJson" class="w-full py-2 bg-surface-950 border border-surface-700 rounded-xl text-xs font-bold text-slate-200 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-download text-emerald-400"></i> Export Shift JSON
+        </button>
+
+        <label class="w-full py-2 bg-surface-950 border border-surface-700 rounded-xl text-xs font-bold text-slate-200 flex items-center justify-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-upload text-cyan-400"></i> Import JSON Backup
+          <input type="file" id="importFileInput" accept=".json" class="hidden" />
+        </label>
+      </div>
+
+      <div class="pt-2 border-t border-surface-700">
+        <button id="btnWipeAll" class="w-full py-1.5 text-rose-400 hover:text-rose-300 text-xs font-bold text-center">
+          Wipe Shift History
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-14 inset-x-4 max-w-sm mx-auto z-50 pointer-events-none transform -translate-y-8 opacity-0 transition-all duration-300 flex items-center gap-2 p-2.5 bg-surface-800 border border-slate-600 rounded-xl shadow-2xl text-xs font-semibold text-white">
+    <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toastMsg">Logged</span>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'RIDER_TRACK_PRO_V7';
+
+    const defaultState = {
+      target: 1500,
+      tripTarget: 48000,
+      tripSavedTotal: 0,
+      tripTargetDate: '2026-11-20T00:00:00',
+      shiftActive: false,
+      startTime: null,
+      endTime: null,
+      accumulatedSeconds: 0,
+      hours: 0,
+      km: 0,
+      orders: 0,
+      startingCashInHand: 0,
+      startingBankBalance: 0,
+      entries: [
+        { id: 1, type: 'earning', category: 'Delivery Pay', amount: 53, method: 'Online', note: 'Zomato order payout', time: '09:30' },
+        { id: 2, type: 'earning', category: 'Delivery Pay', amount: 54, method: 'Online', note: 'Zomato order payout', time: '10:05' },
+        { id: 3, type: 'earning', category: 'Customer Tip', amount: 20, method: 'Cash', note: 'Cash tip from customer', time: '10:07' },
+        { id: 4, type: 'expense', category: 'Fuel', amount: 100, method: 'Cash', note: 'Petrol pump refuel', time: '10:30' },
+        { id: 5, type: 'expense', category: 'Cigarette', amount: 18, method: 'Cash', note: 'Tea stall stop', time: '11:15' }
+      ]
+    };
+
+    let appState = loadState();
+    let currentNumpadBuffer = '0';
+    let currentEntryPayMode = 'Online';
+    let timerInterval = null;
+    let trendChartInstance = null;
+    let pieChartInstance = null;
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          return { ...defaultState, ...parsed };
+        }
+      } catch (e) {
+        console.error('Failed to load state', e);
+      }
+      return JSON.parse(JSON.stringify(defaultState));
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        console.error('Failed to save state', e);
+      }
+    }
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      const toastIcon = document.getElementById('toastIcon');
+
+      toastMsg.textContent = message;
+      toastIcon.className = isError ? 'fa-solid fa-triangle-exclamation text-rose-400' : 'fa-solid fa-circle-check text-emerald-400';
+
+      toast.classList.remove('-translate-y-8', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.add('-translate-y-8', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2200);
+    }
+
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+      }
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+      }
+    }
+
+    function updateNumpadDisplay() {
+      document.getElementById('numpadDisplay').textContent = currentNumpadBuffer;
+    }
+
+    function numpadDigit(digit) {
+      if (currentNumpadBuffer === '0') {
+        currentNumpadBuffer = digit === '00' ? '0' : digit;
+      } else {
+        if (currentNumpadBuffer.length < 6) {
+          currentNumpadBuffer += digit;
+        }
+      }
+      updateNumpadDisplay();
+    }
+
+    function numpadBackspace() {
+      if (currentNumpadBuffer.length <= 1) {
+        currentNumpadBuffer = '0';
+      } else {
+        currentNumpadBuffer = currentNumpadBuffer.slice(0, -1);
+      }
+      updateNumpadDisplay();
+    }
+
+    function numpadClear() {
+      currentNumpadBuffer = '0';
+      updateNumpadDisplay();
+    }
+
+    function numpadSetVal(val) {
+      currentNumpadBuffer = String(val);
+      updateNumpadDisplay();
+    }
+
+    function numpadAddDelta(delta) {
+      const current = parseInt(currentNumpadBuffer, 10) || 0;
+      currentNumpadBuffer = String(Math.max(0, current + delta));
+      updateNumpadDisplay();
+    }
+
+    function toggleEntryPaymentMode() {
+      currentEntryPayMode = currentEntryPayMode === 'Online' ? 'Cash' : 'Online';
+      const label = document.getElementById('currentPayModeLabel');
+      const btn = document.getElementById('togglePayModeBtn');
+      if (currentEntryPayMode === 'Cash') {
+        label.textContent = 'Cash in Hand 💵';
+        btn.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md border border-emerald-500/40 bg-emerald-500/10 text-emerald-300';
+      } else {
+        label.textContent = 'Online / App 📱';
+        btn.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md border border-cyan-500/40 bg-cyan-500/10 text-cyan-300';
+      }
+    }
+
+    function toggleNumpadVisibility() {
+      const grid = document.getElementById('numpadKeypadGrid');
+      const icon = document.getElementById('numpadToggleIcon');
+      grid.classList.toggle('hidden');
+      icon.className = grid.classList.contains('hidden') ? 'fa-solid fa-chevron-down' : 'fa-solid fa-chevron-up';
+    }
+
+    function scrollToNumpad() {
+      const el = document.getElementById('numpadDisplay');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function getCurrentTimeString() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+
+    function submitNumpadLog(type, category) {
+      const amount = parseFloat(currentNumpadBuffer);
+      if (!amount || amount <= 0) {
+        showToast('Enter an amount first (e.g. 53, 54)', true);
+        return;
+      }
+
+      const entryPayMethod = (category === 'Cigarette' || category === 'Food/Chai' || category === 'Bike Repairs') 
+        ? 'Cash' 
+        : currentEntryPayMode;
+
+      appState.entries.push({
+        id: Date.now(),
+        type: type,
+        category: category,
+        amount: amount,
+        method: entryPayMethod,
+        note: `Instant log (${entryPayMethod})`,
+        time: getCurrentTimeString()
+      });
+
+      if (type === 'earning' && category === 'Delivery Pay') {
+        appState.orders = (appState.orders || 0) + 1;
+        updateShiftUI();
+      }
+
+      saveState();
+      recalculateMetrics();
+
+      currentNumpadBuffer = '0';
+      updateNumpadDisplay();
+
+      const symbol = type === 'earning' ? '+' : '-';
+      showToast(`Saved ${symbol}₹${amount} for ${category}!`);
+    }
+
+    function formatTimeDisplay(isoString) {
+      if (!isoString) return '--:--';
+      const d = new Date(isoString);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+
+    function formatSeconds(totalSecs) {
+      const hrs = Math.floor(totalSecs / 3600);
+      const mins = Math.floor((totalSecs % 3600) / 60);
+      const secs = totalSecs % 60;
+      return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function handleStartShift() {
+      const now = new Date();
+      appState.shiftActive = true;
+      appState.startTime = now.toISOString();
+      appState.endTime = null;
+      appState.accumulatedSeconds = 0;
+      saveState();
+
+      updateShiftUI();
+      startTimerLoop();
+      recalculateMetrics();
+      showToast('Shift Started at ' + formatTimeDisplay(appState.startTime));
+    }
+
+    function handleEndShift() {
+      if (!appState.shiftActive) return;
+      
+      const now = new Date();
+      appState.shiftActive = false;
+      appState.endTime = now.toISOString();
+
+      if (appState.startTime) {
+        const diffSecs = Math.max(0, Math.floor((new Date(appState.endTime) - new Date(appState.startTime)) / 1000));
+        appState.accumulatedSeconds = diffSecs;
+        appState.hours = parseFloat((diffSecs / 3600).toFixed(2));
+      }
+
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+
+      saveState();
+      updateShiftUI();
+      recalculateMetrics();
+      showToast('Shift Ended at ' + formatTimeDisplay(appState.endTime));
+    }
+
+    function startTimerLoop() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (!appState.shiftActive || !appState.startTime) return;
+        const now = new Date();
+        const elapsedSecs = Math.max(0, Math.floor((now - new Date(appState.startTime)) / 1000));
+        appState.accumulatedSeconds = elapsedSecs;
+        appState.hours = parseFloat((elapsedSecs / 3600).toFixed(2));
+        
+        document.getElementById('liveShiftTimer').textContent = formatSeconds(elapsedSecs);
+        
+        if (elapsedSecs % 5 === 0) {
+          recalculateMetrics(false);
+        }
+      }, 1000);
+    }
+
+    function updateShiftUI() {
+      const badge = document.getElementById('dutyStatusBadge');
+      const dot = document.getElementById('dutyPulseDot');
+      const startBtn = document.getElementById('btnStartShift');
+      const endBtn = document.getElementById('btnEndShift');
+      const displayStart = document.getElementById('displayStartTime');
+      const displayEnd = document.getElementById('displayEndTime');
+      const timerDisplay = document.getElementById('liveShiftTimer');
+
+      displayStart.textContent = formatTimeDisplay(appState.startTime);
+      displayEnd.textContent = formatTimeDisplay(appState.endTime);
+
+      if (appState.shiftActive) {
+        badge.textContent = 'ON DUTY';
+        badge.className = 'text-[11px] font-extrabold tracking-wider uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 glow-emerald';
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping';
+
+        startBtn.disabled = true;
+        startBtn.className = 'flex items-center justify-center gap-1.5 py-2.5 bg-surface-800 text-slate-500 border border-surface-700/60 font-bold rounded-xl text-xs cursor-not-allowed opacity-50';
+
+        endBtn.disabled = false;
+        endBtn.className = 'flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 text-white font-bold rounded-xl shadow-md text-xs transition active:scale-95 cursor-pointer';
+
+        if (appState.startTime) {
+          const currentElapsed = Math.max(0, Math.floor((new Date() - new Date(appState.startTime)) / 1000));
+          timerDisplay.textContent = formatSeconds(currentElapsed);
+        }
+      } else {
+        badge.textContent = 'OFF DUTY';
+        badge.className = 'text-[11px] font-extrabold tracking-wider uppercase px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700';
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-500';
+
+        startBtn.disabled = false;
+        startBtn.className = 'flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-bold rounded-xl shadow-md text-xs transition active:scale-95 cursor-pointer';
+
+        endBtn.disabled = true;
+        endBtn.className = 'flex items-center justify-center gap-1.5 py-2.5 bg-surface-800 text-slate-500 border border-surface-700/60 font-bold rounded-xl text-xs cursor-not-allowed opacity-50';
+
+        timerDisplay.textContent = formatSeconds(appState.accumulatedSeconds || 0);
+      }
+
+      document.getElementById('inputShiftHours').value = appState.hours || '';
+      document.getElementById('inputShiftKm').value = appState.km || '';
+      document.getElementById('inputShiftOrders').value = appState.orders || '';
+    }
+
+    function updateTripCountdownAndSavings(todayNetProfit) {
+      const targetDate = new Date(appState.tripTargetDate);
+      const now = new Date();
+      const diffTime = targetDate - now;
+      const daysLeft = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+      
+      document.getElementById('tripDaysCountdown').textContent = `${daysLeft} Days Left`;
+
+      const totalTarget = Number(appState.tripTarget) || 48000;
+      const totalSaved = Number(appState.tripSavedTotal) || 0;
+      const percent = Math.min(100, Math.max(0, Math.round((totalSaved / totalTarget) * 100)));
+      const remaining = Math.max(0, totalTarget - totalSaved);
+
+      // Re-render display numbers
+      document.getElementById('tripSavedDisplay').textContent = `₹${totalSaved.toLocaleString('en-IN')}`;
+      document.getElementById('tripProgressPercent').textContent = `${percent}%`;
+      document.getElementById('tripProgressBar').style.width = `${percent}%`;
+      document.getElementById('tripRemainingDisplay').textContent = remaining > 0 ? `₹${remaining.toLocaleString('en-IN')} needed` : 'Goal Fully Achieved! 🎉';
+
+      // Keep inline input in sync if not active
+      const inlineInput = document.getElementById('inlineSavedInput');
+      if (inlineInput && !inlineInput.matches(':focus')) {
+        inlineInput.value = totalSaved;
+      }
+
+      // Update Shift Profit button label
+      const validProfit = Math.max(0, todayNetProfit);
+      document.getElementById('btnShiftProfitValue').textContent = validProfit.toLocaleString('en-IN');
+    }
+
+    function applyInlineSavedTotal() {
+      const inputVal = document.getElementById('inlineSavedInput').value;
+      const newTotal = parseFloat(inputVal);
+      if (isNaN(newTotal) || newTotal < 0) {
+        showToast('Please enter a valid amount', true);
+        return;
+      }
+      appState.tripSavedTotal = newTotal;
+      saveState();
+      recalculateMetrics();
+      showToast(`Total Saved updated to ₹${newTotal.toLocaleString('en-IN')}! 🚀`);
+    }
+
+    function allocateShiftProfitToTrip() {
+      let deliveryPayTotal = 0;
+      let customerTipsTotal = 0;
+      let totalExpenses = 0;
+
+      appState.entries.forEach(item => {
+        const amt = Number(item.amount) || 0;
+        if (item.type === 'earning') {
+          if (item.category === 'Customer Tip') customerTipsTotal += amt;
+          else deliveryPayTotal += amt;
+        } else {
+          totalExpenses += amt;
+        }
+      });
+
+      const todayNetProfit = Math.max(0, (deliveryPayTotal + customerTipsTotal) - totalExpenses);
+      if (todayNetProfit <= 0) {
+        showToast('No positive net profit yet today to allocate', true);
+        return;
+      }
+
+      appState.tripSavedTotal = (Number(appState.tripSavedTotal) || 0) + todayNetProfit;
+      saveState();
+      recalculateMetrics();
+      showToast(`Added today's net profit (₹${todayNetProfit.toLocaleString('en-IN')}) to trip fund! 🏔️`);
+    }
+
+    function setCustomSavingsQuick(val) {
+      document.getElementById('inputCustomSavingsAmount').value = val;
+    }
+
+    function confirmCustomSavingsDeposit() {
+      const amt = parseFloat(document.getElementById('inputCustomSavingsAmount').value);
+      if (!amt || amt <= 0) {
+        showToast('Please enter a valid deposit amount', true);
+        return;
+      }
+      appState.tripSavedTotal = (Number(appState.tripSavedTotal) || 0) + amt;
+      saveState();
+      recalculateMetrics();
+      closeModal('modalCustomSavings');
+      document.getElementById('inputCustomSavingsAmount').value = '';
+      showToast(`Deposited ₹${amt.toLocaleString('en-IN')} to Trip Fund! 🎉`);
+    }
+
+    function recalculateMetrics(updateCharts = true) {
+      let deliveryPayTotal = 0;
+      let customerTipsTotal = 0;
+      let totalExpenses = 0;
+      
+      let cashInFlow = 0;
+      let cashOutFlow = 0;
+      let bankInFlow = 0;
+      let bankOutFlow = 0;
+
+      const expenseByCategory = {
+        'Fuel': 0,
+        'Cigarette': 0,
+        'Food/Chai': 0,
+        'Bike Repairs': 0,
+        'Challan/Parking': 0
+      };
+
+      const trendPoints = [{ time: 'Start', gross: 0, net: 0 }];
+      let runningGross = 0;
+      let runningNet = 0;
+
+      appState.entries.forEach(item => {
+        const amt = Number(item.amount) || 0;
+        const isCash = item.method === 'Cash' || item.category === 'COD Collected';
+
+        if (item.type === 'earning') {
+          runningGross += amt;
+          runningNet += amt;
+
+          if (item.category === 'Customer Tip') {
+            customerTipsTotal += amt;
+          } else {
+            deliveryPayTotal += amt;
+          }
+
+          if (isCash) cashInFlow += amt;
+          else bankInFlow += amt;
+        } else {
+          totalExpenses += amt;
+          runningNet -= amt;
+
+          if (isCash) cashOutFlow += amt;
+          else bankOutFlow += amt;
+
+          if (expenseByCategory[item.category] !== undefined) {
+            expenseByCategory[item.category] += amt;
+          } else {
+            expenseByCategory['Challan/Parking'] += amt;
+          }
+        }
+
+        trendPoints.push({
+          time: item.time || '--:--',
+          gross: runningGross,
+          net: runningNet
+        });
+      });
+
+      const totalEarnings = deliveryPayTotal + customerTipsTotal;
+      const netProfit = totalEarnings - totalExpenses;
+      const hours = Number(appState.hours) || 0;
+      const km = Number(appState.km) || 0;
+
+      const hourlyWage = hours > 0.05 ? (netProfit / hours) : (netProfit > 0 ? netProfit : 0);
+      const perKmRate = km > 0 ? (netProfit / km) : 0;
+
+      const target = Number(appState.target) || 1500;
+      const percent = Math.min(100, Math.max(0, Math.round((netProfit / target) * 100)));
+      const remaining = Math.max(0, target - netProfit);
+
+      const liveCashInHand = (appState.startingCashInHand || 0) + cashInFlow - cashOutFlow;
+      const liveBankBalance = (appState.startingBankBalance || 0) + bankInFlow - bankOutFlow;
+
+      document.getElementById('dispLiveCashInHand').textContent = `₹${liveCashInHand.toLocaleString('en-IN')}`;
+      document.getElementById('dispLiveBankBalance').textContent = `₹${liveBankBalance.toLocaleString('en-IN')}`;
+
+      document.getElementById('heroNetProfit').textContent = `₹${netProfit.toLocaleString('en-IN')}`;
+      document.getElementById('heroDeliveryPay').textContent = `₹${deliveryPayTotal.toLocaleString('en-IN')}`;
+      document.getElementById('heroCustomerTips').textContent = `₹${customerTipsTotal.toLocaleString('en-IN')}`;
+      document.getElementById('heroExpenses').textContent = `₹${totalExpenses.toLocaleString('en-IN')}`;
+      document.getElementById('heroHourlyWage').innerHTML = `₹${Math.round(hourlyWage)}<span class="text-[9px] text-slate-400 font-normal">/h</span>`;
+      document.getElementById('heroPerKm').innerHTML = `₹${perKmRate.toFixed(1)}<span class="text-[9px] text-slate-400 font-normal">/k</span>`;
+
+      // Shift Target Progress Bar
+      const progressBar = document.getElementById('targetProgressBar');
+      progressBar.style.width = `${percent}%`;
+
+      document.getElementById('targetPercentageText').textContent = `${percent}%`;
+      document.getElementById('targetRemainingText').textContent = remaining > 0 ? `₹${remaining.toLocaleString('en-IN')} needed to hit daily goal` : 'Shift Target Achieved! 🎉';
+      document.getElementById('targetGoalAmountDisplay').textContent = `Goal: ₹${target.toLocaleString('en-IN')}`;
+      document.getElementById('doughnutTotalText').textContent = `Total: ₹${totalExpenses.toLocaleString('en-IN')}`;
+      document.getElementById('entryCountBadge').textContent = appState.entries.length;
+
+      // Update Trip Savings & Countdown
+      updateTripCountdownAndSavings(netProfit);
+
+      if (updateCharts) {
+        renderTrendLineChart(trendPoints);
+        renderExpensePieChart(expenseByCategory, totalExpenses);
+      }
+      renderTransactionsList();
+    }
+
+    function renderTransactionsList() {
+      const container = document.getElementById('transactionsList');
+      if (appState.entries.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-5 text-slate-500 text-xs">
+            <i class="fa-solid fa-receipt text-xl mb-1 text-slate-600"></i>
+            <p>No transactions logged yet today.</p>
+            <p class="text-[10px] text-slate-600 mt-0.5">Type an amount (like 53 or 54) on the numpad and tap any category!</p>
+          </div>
+        `;
+        return;
+      }
+
+      const html = [...appState.entries].reverse().map(item => {
+        const isEarning = item.type === 'earning';
+        const isTip = item.category === 'Customer Tip';
+        const colorClass = isTip ? 'text-pink-400' : (isEarning ? 'text-emerald-400' : 'text-rose-400');
+        const sign = isEarning ? '+' : '-';
+        const icon = getCategoryIcon(item.category);
+        const payBadge = item.method === 'Cash' 
+          ? '<span class="text-[9px] font-mono px-1 rounded bg-emerald-950 text-emerald-300 border border-emerald-700/50">Cash</span>'
+          : '<span class="text-[9px] font-mono px-1 rounded bg-cyan-950 text-cyan-300 border border-cyan-700/50">Online</span>';
+
+        return `
+          <div class="flex items-center justify-between p-2 bg-surface-900/80 border border-surface-700/60 rounded-xl">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs ${isTip ? 'bg-pink-500/10 text-pink-400' : (isEarning ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400')}">
+                ${icon}
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs font-bold text-slate-200">${item.category}</span>
+                  ${payBadge}
+                  <span class="text-[9px] text-slate-500 font-mono">${item.time || ''}</span>
+                </div>
+                ${item.note ? `<p class="text-[9px] text-slate-400 truncate max-w-[150px] sm:max-w-xs">${item.note}</p>` : ''}
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold font-mono ${colorClass}">
+                ${sign}₹${Number(item.amount).toLocaleString('en-IN')}
+              </span>
+              <button onclick="deleteEntry(${item.id})" class="text-slate-500 hover:text-rose-400 p-1 transition" title="Delete">
+                <i class="fa-regular fa-trash-can text-xs"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = html;
+    }
+
+    function getCategoryIcon(cat) {
+      switch (cat) {
+        case 'Customer Tip': return '<i class="fa-solid fa-heart"></i>';
+        case 'Delivery Pay': return '<i class="fa-solid fa-box"></i>';
+        case 'COD Collected': return '<i class="fa-solid fa-hand-holding-dollar"></i>';
+        case 'Fuel': return '<i class="fa-solid fa-gas-pump"></i>';
+        case 'Cigarette': return '<i class="fa-solid fa-smoking"></i>';
+        case 'Food/Chai': return '<i class="fa-solid fa-mug-hot"></i>';
+        case 'Bike Repairs': return '<i class="fa-solid fa-wrench"></i>';
+        default: return '<i class="fa-solid fa-receipt"></i>';
+      }
+    }
+
+    function renderTrendLineChart(dataPoints) {
+      const ctx = document.getElementById('trendLineChart').getContext('2d');
+      const labels = dataPoints.map(p => p.time);
+      const grossData = dataPoints.map(p => p.gross);
+      const netData = dataPoints.map(p => p.net);
+
+      if (trendChartInstance) {
+        trendChartInstance.data.labels = labels;
+        trendChartInstance.data.datasets[0].data = grossData;
+        trendChartInstance.data.datasets[1].data = netData;
+        trendChartInstance.update('none');
+        return;
+      }
+
+      trendChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Gross (incl. Tips)',
+              data: grossData,
+              borderColor: '#06b6d4',
+              backgroundColor: 'rgba(6, 182, 212, 0.08)',
+              borderWidth: 2,
+              tension: 0.3,
+              pointRadius: 2.5,
+              pointBackgroundColor: '#06b6d4',
+              fill: false
+            },
+            {
+              label: 'Net Take-Home',
+              data: netData,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.15)',
+              borderWidth: 2.5,
+              tension: 0.3,
+              pointRadius: 3,
+              pointBackgroundColor: '#10b981',
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              labels: { boxWidth: 8, color: '#94a3b8', font: { size: 9, weight: '600' } }
+            },
+            tooltip: {
+              backgroundColor: '#111827',
+              titleColor: '#f1f5f9',
+              bodyColor: '#cbd5e1',
+              borderColor: '#26334d',
+              borderWidth: 1,
+              padding: 6,
+              callbacks: { label: (i) => ` ${i.dataset.label}: ₹${i.raw}` }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(38, 51, 77, 0.4)' },
+              ticks: { color: '#64748b', font: { size: 9 } }
+            },
+            y: {
+              grid: { color: 'rgba(38, 51, 77, 0.4)' },
+              ticks: {
+                color: '#64748b',
+                font: { size: 9 },
+                callback: (v) => '₹' + v
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderExpensePieChart(categories, totalExpenses) {
+      const ctx = document.getElementById('expensePieChart').getContext('2d');
+      const placeholder = document.getElementById('noExpensePlaceholder');
+      const legendContainer = document.getElementById('expenseLegendContainer');
+
+      const labels = ['Petrol', 'Cigarettes', 'Chai & Food', 'Bike/Repairs', 'Other'];
+      const values = [
+        categories['Fuel'] || 0,
+        categories['Cigarette'] || 0,
+        categories['Food/Chai'] || 0,
+        categories['Bike Repairs'] || 0,
+        categories['Challan/Parking'] || 0
+      ];
+
+      const colors = ['#f43f5e', '#f59e0b', '#fb923c', '#06b6d4', '#8b5cf6'];
+
+      if (totalExpenses === 0) {
+        placeholder.classList.remove('hidden');
+        if (pieChartInstance) {
+          pieChartInstance.destroy();
+          pieChartInstance = null;
+        }
+        legendContainer.innerHTML = '';
+        return;
+      } else {
+        placeholder.classList.add('hidden');
+      }
+
+      legendContainer.innerHTML = labels.map((lbl, idx) => {
+        const val = values[idx];
+        const pct = totalExpenses > 0 ? Math.round((val / totalExpenses) * 100) : 0;
+        return `
+          <div class="flex items-center justify-between py-0.5 border-b border-surface-700/30">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full" style="background-color: ${colors[idx]}"></span>
+              <span class="text-slate-300 font-medium text-[11px]">${lbl}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[9px] text-slate-500 font-mono">${pct}%</span>
+              <span class="font-bold text-slate-200 font-mono text-[11px]">₹${val}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (pieChartInstance) {
+        pieChartInstance.data.datasets[0].data = values;
+        pieChartInstance.update('none');
+        return;
+      }
+
+      pieChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: colors,
+            borderWidth: 2,
+            borderColor: '#111827',
+            hoverOffset: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '68%',
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#111827',
+              callbacks: { label: (c) => ` ${c.label}: ₹${c.raw}` }
+            }
+          }
+        }
+      });
+    }
+
+    function deleteEntry(id) {
+      appState.entries = appState.entries.filter(e => e.id !== id);
+      saveState();
+      recalculateMetrics();
+      showToast('Entry deleted');
+    }
+
+    // Modal forms & button actions
+    document.getElementById('formAddEarning').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const cat = document.getElementById('earningType').value;
+      const amt = parseFloat(document.getElementById('earningAmount').value);
+      const method = document.getElementById('earningPayMethod').value;
+      const note = document.getElementById('earningNote').value.trim();
+
+      if (!amt || amt <= 0) return;
+
+      const isExpense = ['Fuel', 'Cigarette', 'Food/Chai', 'Bike Repairs'].includes(cat);
+      const type = isExpense ? 'expense' : 'earning';
+
+      appState.entries.push({
+        id: Date.now(),
+        type: type,
+        category: cat,
+        amount: amt,
+        method: method,
+        note: note,
+        time: getCurrentTimeString()
+      });
+
+      if (cat === 'Delivery Pay') {
+        appState.orders = (appState.orders || 0) + 1;
+        updateShiftUI();
+      }
+
+      saveState();
+      recalculateMetrics();
+      closeModal('modalAddEarning');
+      document.getElementById('formAddEarning').reset();
+      showToast(`Added ${isExpense ? '-' : '+'}₹${amt} (${cat})`);
+    });
+
+    document.getElementById('btnSaveBalances').addEventListener('click', () => {
+      const initCash = parseFloat(document.getElementById('inputInitCash').value) || 0;
+      const initBank = parseFloat(document.getElementById('inputInitBank').value) || 0;
+      const syncToTrip = document.getElementById('checkSyncBalanceToTrip').checked;
+
+      appState.startingCashInHand = initCash;
+      appState.startingBankBalance = initBank;
+
+      if (syncToTrip) {
+        appState.tripSavedTotal = initBank;
+      }
+
+      saveState();
+      recalculateMetrics();
+      closeModal('modalBalances');
+      showToast('Balances saved successfully!');
+    });
+
+    document.getElementById('btnToggleManualHours').addEventListener('click', () => {
+      document.getElementById('manualHoursContainer').classList.toggle('hidden');
+    });
+
+    document.getElementById('inputShiftHours').addEventListener('input', (e) => {
+      appState.hours = parseFloat(e.target.value) || 0;
+      saveState();
+      recalculateMetrics();
+    });
+
+    document.getElementById('inputShiftKm').addEventListener('input', (e) => {
+      appState.km = parseFloat(e.target.value) || 0;
+      saveState();
+      recalculateMetrics();
+    });
+
+    document.getElementById('inputShiftOrders').addEventListener('input', (e) => {
+      appState.orders = parseInt(e.target.value) || 0;
+      saveState();
+    });
+
+    document.getElementById('btnClearToday').addEventListener('click', () => {
+      if (timerInterval) clearInterval(timerInterval);
+      appState.shiftActive = false;
+      appState.startTime = null;
+      appState.endTime = null;
+      appState.accumulatedSeconds = 0;
+      appState.hours = 0;
+      appState.km = 0;
+      appState.orders = 0;
+      appState.entries = [];
+
+      saveState();
+      updateShiftUI();
+      recalculateMetrics();
+      showToast('Shift reset for today');
+    });
+
+    document.getElementById('btnExportJson').addEventListener('click', () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `ridertrack-shift-${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Backup downloaded');
+      closeModal('modalBackup');
+    });
+
+    document.getElementById('importFileInput').addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && Array.isArray(imported.entries)) {
+            appState = { ...defaultState, ...imported };
+            saveState();
+            updateShiftUI();
+            if (appState.shiftActive) startTimerLoop();
+            recalculateMetrics();
+            showToast('Backup restored successfully!');
+            closeModal('modalBackup');
+          } else {
+            showToast('Invalid backup file', true);
+          }
+        } catch (err) {
+          showToast('Could not parse file', true);
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    document.getElementById('btnWipeAll').addEventListener('click', () => {
+      if (timerInterval) clearInterval(timerInterval);
+      localStorage.removeItem(STORAGE_KEY);
+      appState = JSON.parse(JSON.stringify(defaultState));
+      updateShiftUI();
+      recalculateMetrics();
+      closeModal('modalBackup');
+      showToast('All app data erased');
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const dateOpts = { weekday: 'short', day: 'numeric', month: 'short' };
+      document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-IN', dateOpts) + ' Shift';
+
+      document.getElementById('inputInitCash').value = appState.startingCashInHand || 0;
+      document.getElementById('inputInitBank').value = appState.startingBankBalance || 0;
+
+      updateShiftUI();
+      if (appState.shiftActive) {
+        startTimerLoop();
+      }
+      recalculateMetrics();
+      updateNumpadDisplay();
+    });
+  </script>
+</body>
+</html>
