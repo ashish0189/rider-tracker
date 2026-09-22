@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>RiderTrack Pro - Zomato Earnings, Trip Savings & Shift Tracker</title>
+  <title>RiderTrack Pro — Personal Ride Command Center</title>
 
   <!-- Mobile App Manifest & Styling -->
   <meta name="theme-color" content="#06090e" />
@@ -54,12 +54,45 @@
   </script>
 
   <style>
+    :root { --ink: #080b17; --panel: rgba(18, 24, 45, .72); --line: rgba(174, 196, 255, .13); }
+    * { box-sizing: border-box; }
+    html { background: var(--ink); }
     body {
-      background-color: #06090e;
+      background:
+        radial-gradient(circle at 9% 3%, rgba(90, 78, 255, .22), transparent 25rem),
+        radial-gradient(circle at 92% 19%, rgba(6, 182, 212, .15), transparent 28rem),
+        linear-gradient(135deg, #080b17 0%, #0b1020 47%, #080b17 100%);
       color: #f1f5f9;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      overflow-x: hidden;
     }
+    body::before, body::after { content: ''; position: fixed; pointer-events: none; z-index: -1; border-radius: 999px; filter: blur(1px); }
+    body::before { width: 28rem; height: 28rem; right: -12rem; top: 27rem; background: radial-gradient(circle, rgba(99,102,241,.13), transparent 68%); }
+    body::after { width: 23rem; height: 23rem; left: -14rem; bottom: -8rem; background: radial-gradient(circle, rgba(16,185,129,.11), transparent 67%); }
+    header { background: rgba(8, 11, 23, .64) !important; border-color: var(--line) !important; box-shadow: 0 14px 34px rgba(0,0,0,.16); }
+    main { perspective: 1200px; }
+    main > section {
+      background: linear-gradient(135deg, rgba(28, 35, 62, .74), rgba(12, 17, 33, .78)) !important;
+      border-color: var(--line) !important;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, .22), inset 0 1px 0 rgba(255,255,255,.04) !important;
+      backdrop-filter: blur(18px);
+      transform: translateZ(0);
+      transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease;
+    }
+    @media (hover:hover) { main > section:hover { transform: translateY(-4px) rotateX(.45deg); border-color: rgba(139, 170, 255, .30) !important; box-shadow: 0 28px 52px rgba(0,0,0,.3), 0 0 34px rgba(76, 79, 255, .07) !important; } }
+    .top-orbit { position: absolute; width: 170px; height: 170px; right: -52px; top: -60px; border: 1px solid rgba(129, 140, 248, .26); border-radius: 50%; transform: rotateX(66deg) rotateZ(-23deg); pointer-events:none; }
+    .top-orbit::before, .top-orbit::after { content: ''; position:absolute; border-radius:50%; }
+    .top-orbit::before { width: 10px; height:10px; top: 20px; left: 25px; background:#67e8f9; box-shadow: 0 0 20px #22d3ee; }
+    .top-orbit::after { inset: 23px; border: 1px solid rgba(52,211,153,.22); }
+    .brand-mark { position: relative; isolation: isolate; }
+    .brand-mark::after { content:''; position:absolute; inset:4px; border:1px solid rgba(255,255,255,.34); border-radius:9px; z-index:-1; transform: translate(3px,3px); }
+    .hero-label { letter-spacing: .19em; }
+    button { transition: transform .16s ease, filter .16s ease, box-shadow .16s ease !important; }
+    button:hover { filter: brightness(1.12); }
+    button:active { transform: translateY(1px) scale(.98) !important; }
+    input, select, textarea { background-color: rgba(5, 9, 22, .7) !important; border-color: rgba(166, 187, 255, .16) !important; }
+    ::selection { color: #fff; background: #6366f1; }
     input, select, textarea {
       user-select: auto;
     }
@@ -97,7 +130,7 @@
   <header class="sticky top-0 z-40 bg-surface-950/95 backdrop-blur-md border-b border-surface-700/60 px-4 py-2.5">
     <div class="max-w-xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-red to-orange-500 flex items-center justify-center shadow-md shadow-red-950/50">
+        <div class="brand-mark w-9 h-9 rounded-xl bg-gradient-to-br from-brand-red to-orange-500 flex items-center justify-center shadow-md shadow-red-950/50">
           <i class="fa-solid fa-motorcycle text-white text-base"></i>
         </div>
         <div>
@@ -122,6 +155,39 @@
   </header>
 
   <main class="max-w-xl mx-auto w-full px-3.5 pt-3 flex-1 space-y-3">
+
+    <section class="relative overflow-hidden rounded-2xl p-4 border border-indigo-400/20 bg-gradient-to-r from-indigo-950/40 via-surface-850 to-cyan-950/20">
+      <div class="top-orbit"></div>
+      <div class="relative flex items-end justify-between gap-3">
+        <div>
+          <p class="hero-label text-[9px] font-extrabold uppercase text-cyan-300">Personal command center</p>
+          <h2 class="mt-1 text-xl font-extrabold tracking-tight text-white">Ride smarter. <span class="text-indigo-300">Keep more.</span></h2>
+          <p class="mt-1 text-[11px] text-slate-400">A focused shift dashboard for your daily momentum.</p>
+        </div>
+        <div class="relative shrink-0 rounded-xl border border-cyan-300/20 bg-cyan-400/10 px-2.5 py-2 text-right shadow-lg shadow-cyan-950/30">
+          <p class="text-[8px] font-bold uppercase tracking-wider text-cyan-300">Focus mode</p>
+          <p class="text-[11px] font-mono font-extrabold text-white">ON · TODAY</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="ledger-overview rounded-2xl p-3.5">
+      <div class="flex items-center justify-between gap-3 mb-3">
+        <div>
+          <p class="text-[10px] font-extrabold uppercase tracking-wider text-cyan-300">Your saved ledger</p>
+          <p class="text-[10px] text-slate-400 mt-0.5">Every entry is attached to a day and saved on this device.</p>
+        </div>
+        <label class="shrink-0 rounded-xl border border-indigo-400/20 bg-slate-950/40 px-2 py-1.5">
+          <span class="block text-[8px] uppercase font-bold text-slate-500">Viewing</span>
+          <input id="ledgerDate" type="date" class="bg-transparent text-[11px] font-mono font-bold text-indigo-200 outline-none" />
+        </label>
+      </div>
+      <div class="grid grid-cols-3 gap-2 text-center">
+        <div class="rounded-xl border border-emerald-400/10 bg-emerald-400/5 p-2"><span class="block text-[8px] font-bold uppercase text-slate-500">This day</span><strong id="ledgerDayNet" class="text-xs font-mono text-emerald-300">₹0</strong></div>
+        <div class="rounded-xl border border-indigo-400/10 bg-indigo-400/5 p-2"><span class="block text-[8px] font-bold uppercase text-slate-500">This month</span><strong id="ledgerMonthNet" class="text-xs font-mono text-indigo-200">₹0</strong></div>
+        <div class="rounded-xl border border-cyan-400/10 bg-cyan-400/5 p-2"><span class="block text-[8px] font-bold uppercase text-slate-500">All time</span><strong id="ledgerAllNet" class="text-xs font-mono text-cyan-200">₹0</strong></div>
+      </div>
+    </section>
 
     <!-- UTTARAKHAND TRIP & EMIs/RENT SAVINGS CARD -->
     <section class="bg-gradient-to-br from-indigo-950/40 via-surface-850 to-surface-900 border border-indigo-500/40 rounded-2xl p-3.5 shadow-xl relative overflow-hidden">
@@ -512,7 +578,7 @@
           Activity Log (<span id="entryCountBadge">0</span>)
         </h2>
         <button id="btnClearToday" class="text-[10px] font-semibold text-rose-400 hover:text-rose-300">
-          Reset Today
+          Clear this day
         </button>
       </div>
 
@@ -769,7 +835,7 @@
 
       <div class="pt-2 border-t border-surface-700">
         <button id="btnWipeAll" class="w-full py-1.5 text-rose-400 hover:text-rose-300 text-xs font-bold text-center">
-          Wipe Shift History
+          Wipe all saved data
         </button>
       </div>
     </div>
@@ -782,7 +848,10 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'RIDER_TRACK_PRO_V7';
+    const STORAGE_KEY = 'RIDER_TRACK_PRO_V8';
+    const DATABASE_NAME = 'RiderTrackLedger';
+    const DATABASE_VERSION = 1;
+    let ledgerDatabase = null;
 
     const defaultState = {
       target: 1500,
@@ -798,13 +867,8 @@
       orders: 0,
       startingCashInHand: 0,
       startingBankBalance: 0,
-      entries: [
-        { id: 1, type: 'earning', category: 'Delivery Pay', amount: 53, method: 'Online', note: 'Zomato order payout', time: '09:30' },
-        { id: 2, type: 'earning', category: 'Delivery Pay', amount: 54, method: 'Online', note: 'Zomato order payout', time: '10:05' },
-        { id: 3, type: 'earning', category: 'Customer Tip', amount: 20, method: 'Cash', note: 'Cash tip from customer', time: '10:07' },
-        { id: 4, type: 'expense', category: 'Fuel', amount: 100, method: 'Cash', note: 'Petrol pump refuel', time: '10:30' },
-        { id: 5, type: 'expense', category: 'Cigarette', amount: 18, method: 'Cash', note: 'Tea stall stop', time: '11:15' }
-      ]
+      selectedDate: new Date().toISOString().slice(0, 10),
+      entries: []
     };
 
     let appState = loadState();
@@ -816,7 +880,7 @@
 
     function loadState() {
       try {
-        const saved = localStorage.getItem(STORAGE_KEY);
+        const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('RIDER_TRACK_PRO_V7');
         if (saved) {
           const parsed = JSON.parse(saved);
           return { ...defaultState, ...parsed };
@@ -829,9 +893,103 @@
 
     function saveState() {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        // Preferences stay small; transactions live in IndexedDB, which is built for large local history.
+        const { entries, ...preferences } = appState;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
+        if (ledgerDatabase) saveEntriesForSelectedDate().then(refreshLedgerSummary);
       } catch (e) {
         console.error('Failed to save state', e);
+      }
+    }
+
+    function todayKey() { return new Date().toISOString().slice(0, 10); }
+
+    function openLedgerDatabase() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
+        request.onupgradeneeded = () => {
+          const database = request.result;
+          const store = database.createObjectStore('entries', { keyPath: 'id' });
+          store.createIndex('date', 'date', { unique: false });
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function requestToPromise(request) {
+      return new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function saveEntriesForSelectedDate() {
+      if (!ledgerDatabase) return;
+      const date = appState.selectedDate || todayKey();
+      const transaction = ledgerDatabase.transaction('entries', 'readwrite');
+      const store = transaction.objectStore('entries');
+      const index = store.index('date');
+      const keys = await requestToPromise(index.getAllKeys(date));
+      keys.forEach(key => store.delete(key));
+      appState.entries.forEach(entry => store.put({ ...entry, date }));
+    }
+
+    async function refreshLedgerSummary() {
+      if (!ledgerDatabase) return;
+      const all = await requestToPromise(ledgerDatabase.transaction('entries').objectStore('entries').getAll());
+      const sumNet = records => records.reduce((sum, entry) => sum + (entry.type === 'earning' ? Number(entry.amount) || 0 : -(Number(entry.amount) || 0)), 0);
+      const date = appState.selectedDate || todayKey();
+      const month = date.slice(0, 7);
+      document.getElementById('ledgerDayNet').textContent = `₹${sumNet(appState.entries).toLocaleString('en-IN')}`;
+      document.getElementById('ledgerMonthNet').textContent = `₹${sumNet(all.filter(entry => entry.date?.startsWith(month))).toLocaleString('en-IN')}`;
+      document.getElementById('ledgerAllNet').textContent = `₹${sumNet(all).toLocaleString('en-IN')}`;
+    }
+
+    async function loadEntriesForDate(date) {
+      if (!ledgerDatabase) return;
+      const store = ledgerDatabase.transaction('entries').objectStore('entries');
+      appState.entries = await requestToPromise(store.index('date').getAll(date));
+      appState.entries.sort((a, b) => (a.id || 0) - (b.id || 0));
+      recalculateMetrics();
+      refreshLedgerSummary();
+    }
+
+    async function replaceLedgerEntries(records) {
+      if (!ledgerDatabase) return;
+      const transaction = ledgerDatabase.transaction('entries', 'readwrite');
+      const store = transaction.objectStore('entries');
+      store.clear();
+      records.forEach((entry, index) => store.put({
+        ...entry,
+        id: entry.id || Date.now() + index,
+        date: entry.date || appState.selectedDate || todayKey()
+      }));
+      await new Promise((resolve, reject) => {
+        transaction.oncomplete = resolve;
+        transaction.onerror = () => reject(transaction.error);
+      });
+    }
+
+    async function initialiseLedger() {
+      const legacyEntries = Array.isArray(appState.entries) ? appState.entries : [];
+      try {
+        ledgerDatabase = await openLedgerDatabase();
+        appState.selectedDate = appState.selectedDate || todayKey();
+        document.getElementById('ledgerDate').value = appState.selectedDate;
+        const existing = await requestToPromise(ledgerDatabase.transaction('entries').objectStore('entries').index('date').getAll(appState.selectedDate));
+        if (existing.length === 0 && legacyEntries.length) {
+          appState.entries = legacyEntries.map(entry => ({ ...entry, id: entry.id || Date.now() + Math.random(), date: appState.selectedDate }));
+          await saveEntriesForSelectedDate();
+        } else {
+          appState.entries = existing;
+        }
+        saveState();
+        recalculateMetrics();
+        refreshLedgerSummary();
+      } catch (error) {
+        console.error('Ledger database unavailable', error);
+        showToast('Storage is unavailable in this browser', true);
       }
     }
 
@@ -950,6 +1108,7 @@
 
       appState.entries.push({
         id: Date.now(),
+        date: appState.selectedDate || todayKey(),
         type: type,
         category: category,
         amount: amount,
@@ -1527,6 +1686,7 @@
 
       appState.entries.push({
         id: Date.now(),
+        date: appState.selectedDate || todayKey(),
         type: type,
         category: cat,
         amount: amt,
@@ -1600,11 +1760,12 @@
       saveState();
       updateShiftUI();
       recalculateMetrics();
-      showToast('Shift reset for today');
+      showToast('Entries cleared for this day');
     });
 
-    document.getElementById('btnExportJson').addEventListener('click', () => {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+    document.getElementById('btnExportJson').addEventListener('click', async () => {
+      const allEntries = ledgerDatabase ? await requestToPromise(ledgerDatabase.transaction('entries').objectStore('entries').getAll()) : appState.entries;
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ ...appState, entries: allEntries }, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
       downloadAnchor.setAttribute("download", `ridertrack-shift-${new Date().toISOString().slice(0,10)}.json`);
@@ -1619,11 +1780,15 @@
       const file = event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
           const imported = JSON.parse(e.target.result);
           if (imported && Array.isArray(imported.entries)) {
-            appState = { ...defaultState, ...imported };
+            const { entries, ...importedPreferences } = imported;
+            appState = { ...defaultState, ...importedPreferences, entries: [] };
+            appState.selectedDate = appState.selectedDate || todayKey();
+            await replaceLedgerEntries(entries);
+            await loadEntriesForDate(appState.selectedDate);
             saveState();
             updateShiftUI();
             if (appState.shiftActive) startTimerLoop();
@@ -1643,11 +1808,18 @@
     document.getElementById('btnWipeAll').addEventListener('click', () => {
       if (timerInterval) clearInterval(timerInterval);
       localStorage.removeItem(STORAGE_KEY);
+      if (ledgerDatabase) ledgerDatabase.close();
+      indexedDB.deleteDatabase(DATABASE_NAME);
+      ledgerDatabase = null;
       appState = JSON.parse(JSON.stringify(defaultState));
       updateShiftUI();
       recalculateMetrics();
       closeModal('modalBackup');
-      showToast('All app data erased');
+      document.getElementById('ledgerDate').value = appState.selectedDate;
+      document.getElementById('ledgerDayNet').textContent = '₹0';
+      document.getElementById('ledgerMonthNet').textContent = '₹0';
+      document.getElementById('ledgerAllNet').textContent = '₹0';
+      showToast('All saved data erased');
     });
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -1656,6 +1828,16 @@
 
       document.getElementById('inputInitCash').value = appState.startingCashInHand || 0;
       document.getElementById('inputInitBank').value = appState.startingBankBalance || 0;
+      document.getElementById('ledgerDate').value = appState.selectedDate || todayKey();
+      document.getElementById('ledgerDate').addEventListener('change', async (event) => {
+        const nextDate = event.target.value;
+        if (!nextDate || nextDate === appState.selectedDate) return;
+        await saveEntriesForSelectedDate();
+        appState.selectedDate = nextDate;
+        const { entries, ...preferences } = appState;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
+        await loadEntriesForDate(nextDate);
+      });
 
       updateShiftUI();
       if (appState.shiftActive) {
@@ -1663,6 +1845,7 @@
       }
       recalculateMetrics();
       updateNumpadDisplay();
+      initialiseLedger();
     });
   </script>
 </body>
